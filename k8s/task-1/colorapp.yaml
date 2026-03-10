@@ -43,13 +43,13 @@ spec:
         # inject Secret part    
         - secretRef:
             name: secret-cm
-        # resources:                  # to define needed recorces 
-        #   limits:                   # set the max limits
-        #     cpu: "100m"            
-        #     memory: "128Mi"       
-        #   requests:                # make sure these recorces to be existed before start
-        #     cpu: "100m"            
-        #     memory: "128Mi"        
+        resources:                  # to define needed recorces 
+          limits:                   # set the max limits
+            cpu: "100m"            
+            memory: "128Mi"       
+          requests:                # make sure these recorces to be existed before start
+            cpu: "100m"            
+            memory: "128Mi"        
 
 --- 
 # cluster IP Service 
