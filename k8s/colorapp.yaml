@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-cm
+type: Opaque
+data:
+  password: "YWhtZWQ="
+---
+# CM
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: colorapp-cm
+data:
+  COLOR: "black"
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment 
+metadata:
+  name: colorapp #name of Deployment inside cluster
+  labels:
+    app: colorapp # this label for the deployment it self 
+spec:
+  replicas: 3 # Tells Kubernetes to run 3 pods
+  selector:
+    matchLabels:
+      app: colorapp # The Deployment selects pods with this label 
+  template:
+    metadata:
+      labels:
+        app: colorapp # Apply the label to the pods
+    spec:
+      containers:
+      - name: colorapp
+        image: minaamin/color-app:v1 
+        ports:
+        - containerPort: 5000
+        envFrom:
+        # inject CM part
+        - configMapRef:
+            name: colorapp-cm
+        # inject Secret part    
+        - secretRef:
+            name: secret-cm
+        # resources:                  # to define needed recorces 
+        #   limits:                   # set the max limits
+        #     cpu: "100m"            
+        #     memory: "128Mi"       
+        #   requests:                # make sure these recorces to be existed before start
+        #     cpu: "100m"            
+        #     memory: "128Mi"        
+
+--- 
+# cluster IP Service 
+apiVersion: v1
+kind: Service
+metadata:
+  name: colorapp-cluserip # name of the service 
+spec:
+  type: ClusterIP
+  selector:
+    app: colorapp # service will select the containers running with this label 
+  ports:
+    - port: 80 # service port
+      targetPort: 5000 # my app port 
+
+---
+# ingress part
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: colorapp-ingress 
+spec:
+  rules:
+  #- host: colorapp.local       # name of URL
+  -  http:
+      paths:
+      - path: /               # where to star searching 
+        pathType: Prefix      # to allow access to anything commes after / like "/login"
+        backend:
+          service:
+            name: colorapp-cluserip # our culsterip service
+            port:
+              number: 80 # this port is the port for the clusterip port ;)

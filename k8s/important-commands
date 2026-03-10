@@ -1,0 +1,6 @@
+# To expose minikube 
+kubectl port-forward svc/colorapp-cluserip 8080:80
+
+# To apply changes after updating CM 
+kubectl apply -f .
+kubectl rollout restart deployment colorapp
