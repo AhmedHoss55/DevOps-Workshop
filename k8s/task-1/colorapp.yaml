@@ -73,7 +73,7 @@ metadata:
   name: colorapp-ingress 
 spec:
   rules:
-  #- host: colorapp.local       # name of URL
+  #- host: colorapp.local       # name of URL, this one disabled just for testing in Github codespace :D
   -  http:
       paths:
       - path: /               # where to star searching 
